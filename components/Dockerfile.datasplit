@@ -1,0 +1,9 @@
+FROM python:3
+
+COPY ./requirements.txt .
+
+RUN pip install -r requirements.txt
+
+COPY ./data_split.py .
+
+ENTRYPOINT ["python", "/data_split.py"]
