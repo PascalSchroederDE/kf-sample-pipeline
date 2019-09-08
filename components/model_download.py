@@ -13,7 +13,7 @@ def get_activation_func(shorthand):
 def load_data(path):
     return pd.read_csv(path)
 
-def build_model(input_shape):
+def download_model(input_shape):
     return tf.keras.applications.MobileNetV2(input_shape=IMG_SHAPE,
                                                include_top=False,
                                                weights='imagenet')
@@ -28,7 +28,7 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
 
     logging.info("Downloading model...")
-    model = build_model((args.input_shape_height, args.input_shape_width), args.num_units, args.num_outputs, get_activation_func(args.activation_l2), get_activation_func(args.activation_l3))
+    model = download_model((args.input_shape_height, args.input_shape_width))
 
     logging.info("Saving model...")
     model.save(args.output)

@@ -6,6 +6,17 @@ import logging
 CATEGORIES = ['top', 'trouser', 'pullover', 'dress', 'coat',
                'sandal', 'shirt', 'sneaker', 'bag', 'ankle_boot']
 
+def read_file(path):
+    f = open(path, "r")
+    content = f.read()
+    f.close()
+    return content
+
+def write_file(path, content):
+    f = open(path, "w")
+    f.write(content)
+    f.close()
+
 def load_data(path):
     return pd.read_csv(path)
 
@@ -53,6 +64,8 @@ def main():
 
     logging.info("Writing resulting dataframe to csv")
     df.to_csv(args.output, index=False)
+
+    write("/prepdf_output.txt", args.output)
 
 if __name__ == '__main__':
     main()

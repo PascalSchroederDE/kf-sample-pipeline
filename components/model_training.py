@@ -6,6 +6,17 @@ import argparse
 import logging
 
 
+def read_file(path):
+    f = open(path, "r")
+    content = f.read()
+    f.close()
+    return content
+
+def write_file(path, content):
+    f = open(path, "w")
+    f.write(content)
+    f.close()
+
 def load_data(path):
     return pd.read_csv(path)
 
@@ -29,17 +40,19 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
 
     logging.info("Loading data...")
-    train_img = load_data(args.input_train_img)
-    train_label = load_data(args.input_train_label)
+    train_img = load_data(read_file(args.input_train_img))
+    train_label = load_data(read_file(args.input_train_label))
 
     logging.info("Preparing images...")
     train_img = prepare_image_shape(train_img.values, args.input_shape_height, args.input_shape_width)
 
     logging.info("Loading model...")
-    model = load_model(args.model_location)
+    model = load_model(read_file(args.model_location))
 
     logging.info("Training model...")
     model.fit(train_img, train_label, epochs=args.epochs)
 
     logging.info("Saving model weights...")
     model.save(args.output)
+
+    write_file("/model.txt", args.output)
