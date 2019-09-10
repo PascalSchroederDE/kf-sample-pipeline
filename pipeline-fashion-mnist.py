@@ -43,10 +43,10 @@ def data_split_op(impr_dataset_location, test_size, random_state, output_train_i
       '--output_test_label', output_test_label
     ],
     file_outputs={
-      'output_train_img': '/trainimg.txt',
-      'output_train_label': '/trainlabel.txt',
-      'output_test_img':'/testimg.txt',
-      'output_test_label': '/testlabel.txt'
+      'train_img': '/trainimg.txt',
+      'train_label': '/trainlabel.txt',
+      'test_img': '/testimg.txt',
+      'test_label': '/testlabel.txt',
     }
   )
 
@@ -132,14 +132,14 @@ def pipeline(dataset_location='/mnt/data/manipulated_fashion_mnist.csv', test_si
   
   with dsl.Condition(use_pretrained_model == 'True'):
     model_building = model_download_op(input_shape_height, input_shape_width, location_base_model).apply(onprem.mount_pvc("fashion-mnist-vol", 'local-storage', "/mnt"))
-    model_training = model_train_op(data_split.outputs['output_train_img'], data_split.outputs['output_train_label'], input_shape_height, input_shape_width, model_building.outputs['output_model_loc'], num_epochs, location_trained_model).apply(onprem.mount_pvc("fashion-mnist-vol", 'local-storage', "/mnt"))
-    model_evaluation = model_eval_op(data_split.outputs['output_test_img'], data_split.outputs['output_test_label'], input_shape_height, input_shape_width, model_training.outputs['output_model_loc'], location_result).apply(onprem.mount_pvc("fashion-mnist-vol", 'local-storage', "/mnt"))
+    model_training = model_train_op(data_split.outputs['train_img'], data_split.outputs['train_label'], input_shape_height, input_shape_width, model_building.outputs['output_model_loc'], num_epochs, location_trained_model).apply(onprem.mount_pvc("fashion-mnist-vol", 'local-storage', "/mnt"))
+    model_evaluation = model_eval_op(data_split.outputs['test_img'], data_split.outputs['test_label'], input_shape_height, input_shape_width, model_training.outputs['output_model_loc'], location_result).apply(onprem.mount_pvc("fashion-mnist-vol", 'local-storage', "/mnt"))
 
 
   with dsl.Condition(use_pretrained_model == 'False'):
     model_building = model_build_op(input_shape_height, input_shape_width, model_units_num, model_outputs_num, model_activation_func_layer2, model_activation_func_layer3, optimizer, loss, metrics, location_base_model).apply(onprem.mount_pvc("fashion-mnist-vol", 'local-storage', "/mnt"))
-    model_training = model_train_op(data_split.outputs['output_train_img'], data_split.outputs['output_train_label'], input_shape_height, input_shape_width, model_building.outputs['output_model_loc'], num_epochs, location_trained_model).apply(onprem.mount_pvc("fashion-mnist-vol", 'local-storage', "/mnt"))
-    model_evaluation = model_eval_op(data_split.outputs['output_test_img'], data_split.outputs['output_test_label'], input_shape_height, input_shape_width, model_training.outputs['output_model_loc'], location_result).apply(onprem.mount_pvc("fashion-mnist-vol", 'local-storage', "/mnt"))
+    model_training = model_train_op(data_split.outputs['train_img'], data_split.outputs['train_label'], input_shape_height, input_shape_width, model_building.outputs['output_model_loc'], num_epochs, location_trained_model).apply(onprem.mount_pvc("fashion-mnist-vol", 'local-storage', "/mnt"))
+    model_evaluation = model_eval_op(data_split.outputs['test_img'], data_split.outputs['test_label'], input_shape_height, input_shape_width, model_training.outputs['output_model_loc'], location_result).apply(onprem.mount_pvc("fashion-mnist-vol", 'local-storage', "/mnt"))
 
  
 
