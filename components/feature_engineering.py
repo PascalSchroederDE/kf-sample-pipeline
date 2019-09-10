@@ -2,12 +2,6 @@ import pandas as pd
 import argparse
 import logging
 
-def read_file(path):
-    f = open(path, "r")
-    content = f.read()
-    f.close()
-    return content
-
 def write_file(path, content):
     f = open(path, "w")
     f.write(content)
@@ -31,7 +25,7 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
 
     logging.info("Loading data...")
-    df = load_data(read_file(args.dataset_location))
+    df = load_data(args.dataset_location)
 
     logging.info("Applying one hot encoding...")
     df = one_hot_encoding(df)    

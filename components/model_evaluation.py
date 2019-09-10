@@ -5,12 +5,6 @@ from tensorflow import keras
 import argparse
 import logging
 
-def read_file(path):
-    f = open(path, "r")
-    content = f.read()
-    f.close()
-    return content
-
 def write_file(path, content):
     f = open(path, "w")
     f.write(content)
@@ -43,14 +37,14 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
 
     logging.info("Loading data...")
-    test_img = load_data(read_file(args.input_test_img))
-    test_label = load_data(read_file(args.input_test_label))
+    test_img = load_data(args.input_test_img)
+    test_label = load_data(args.input_test_label)
 
     logging.info("Preparing images...")
     test_img = prepare_image_shape(test_img.values, args.input_shape_height, args.input_shape_width)
 
     logging.info("Loading model...")
-    model = load_model(read_file(args.model_location))
+    model = load_model(args.model_location)
 
     logging.info("Evaluate model...")
     loss, acc = model.evaluate(test_img, test_label)
@@ -60,4 +54,7 @@ def main():
     logging.info("Saving loss and accuracy...")
     store_loss_acc(args.output, loss, acc)
 
-    write_file("/trained_model.txt", args.output)
+    write_file("/result.txt", args.output)
+
+if __name__ == '__main__':
+    main()

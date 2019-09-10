@@ -6,12 +6,6 @@ import argparse
 import logging
 
 
-def read_file(path):
-    f = open(path, "r")
-    content = f.read()
-    f.close()
-    return content
-
 def write_file(path, content):
     f = open(path, "w")
     f.write(content)
@@ -24,7 +18,7 @@ def load_model(path):
     return keras.models.load_model(path)
 
 def prepare_image_shape(imageset, shape_height, shape_width):
-    return np.array([img.reshape(shape_height,shape_width) for img in imageset])
+    return np.array([img.reshape(shape_height,shape_width) for img in imageset.values])
 
 def main():
     parser = argparse.ArgumentParser(description="Feature engineering")
@@ -40,19 +34,23 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
 
     logging.info("Loading data...")
-    train_img = load_data(read_file(args.input_train_img))
-    train_label = load_data(read_file(args.input_train_label))
+    train_img_raw = load_data(args.input_train_img)
+    train_label = load_data(args.input_train_label)
 
     logging.info("Preparing images...")
-    train_img = prepare_image_shape(train_img.values, args.input_shape_height, args.input_shape_width)
+    train_img = prepare_image_shape(train_img_raw, args.input_shape_height, args.input_shape_width)
 
     logging.info("Loading model...")
-    model = load_model(read_file(args.model_location))
-
+    model = load_model(args.model_location)
+    logging.info(train_img.shape)
+    logging.info(train_label.shape)
     logging.info("Training model...")
     model.fit(train_img, train_label, epochs=args.epochs)
 
     logging.info("Saving model weights...")
     model.save(args.output)
 
-    write_file("/model.txt", args.output)
+    write_file("/trained_model.txt", args.output)
+
+if __name__ == '__main__':
+    main()

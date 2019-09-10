@@ -4,9 +4,14 @@ from tensorflow import keras
 import argparse
 import logging
 
+def write_file(path, content):
+    f = open(path, "w")
+    f.write(content)
+    f.close()
+    
 def get_activation_func(shorthand):
     return {
-        "relu": tf.nn,
+        "relu": tf.nn.relu,
         "softmax": tf.nn.softmax
     }[shorthand]
 
@@ -46,3 +51,8 @@ def main():
 
     logging.info("Saving model...")
     model.save(args.output)
+
+    write_file("/model.txt", args.output)
+    
+if __name__ == '__main__':
+    main()

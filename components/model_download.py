@@ -4,6 +4,11 @@ from tensorflow import keras
 import argparse
 import logging
 
+def write_file(path, content):
+    f = open(path, "w")
+    f.write(content)
+    f.close()
+    
 def get_activation_func(shorthand):
     return {
         "relu": tf.nn,
@@ -14,7 +19,7 @@ def load_data(path):
     return pd.read_csv(path)
 
 def download_model(input_shape):
-    return tf.keras.applications.MobileNetV2(input_shape=IMG_SHAPE,
+    return tf.keras.applications.MobileNetV2(input_shape=input_shape,
                                                include_top=False,
                                                weights='imagenet')
 
@@ -32,4 +37,9 @@ def main():
 
     logging.info("Saving model...")
     model.save(args.output)
+
+    write_file("/model.txt", args.output)
+
+if __name__ == '__main__':
+    main()
     
