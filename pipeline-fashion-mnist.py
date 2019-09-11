@@ -117,7 +117,10 @@ def model_eval_op(input_test_img, input_test_label, input_shape_height, input_sh
     ],
     file_outputs={
       'output': '/result.txt',
-    }
+    },
+    output_artifact_paths={
+            'mlpipeline-ui-metadata': '/mlpipeline-ui-metadata.json',
+    },
   )
 
 @dsl.pipeline(
@@ -141,7 +144,7 @@ def pipeline(dataset_location='/mnt/data/manipulated_fashion_mnist.csv', test_si
     model_training = model_train_op(data_split.outputs['train_img'], data_split.outputs['train_label'], input_shape_height, input_shape_width, model_building.outputs['output_model_loc'], num_epochs, location_trained_model).apply(onprem.mount_pvc("fashion-mnist-vol", 'local-storage', "/mnt"))
     model_evaluation = model_eval_op(data_split.outputs['test_img'], data_split.outputs['test_label'], input_shape_height, input_shape_width, model_training.outputs['output_model_loc'], location_result).apply(onprem.mount_pvc("fashion-mnist-vol", 'local-storage', "/mnt"))
 
- 
+
 
 if __name__ == '__main__':
   kfp.compiler.Compiler().compile(pipeline, __file__ + '.tar.gz')
