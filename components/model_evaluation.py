@@ -4,6 +4,7 @@ import tensorflow as tf
 from tensorflow import keras
 import argparse
 import logging
+import json
 
 def write_file(path, content):
     f = open(path, "w")
@@ -20,9 +21,16 @@ def prepare_image_shape(imageset, shape_height, shape_width):
     return np.array([img.reshape(shape_height,shape_width) for img in imageset])
 
 def store_loss_acc(file, loss, acc):
+    metadata = {
+        'outputs' : [
+        {
+            'storage': 'inline',
+            'source': '# Results\n Accuracy: {} \n Loss: {}'.format(acc, loss),
+            'type': 'markdown',
+        }]
+    }
     with open (file,'w') as f:
-        f.write("Loss: {}".format(loss))
-        f.write("Accuracy: {}".format(acc))
+        json.dump(metadata, f)
 
 def main():
     parser = argparse.ArgumentParser(description="Feature engineering")
@@ -53,8 +61,6 @@ def main():
 
     logging.info("Saving loss and accuracy...")
     store_loss_acc(args.output, loss, acc)
-
-    write_file("/result.txt", args.output)
 
 if __name__ == '__main__':
     main()
